@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Spacebridges -  Neural Networks 2.0</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    canvas {
+      display: block;
+    }
+
+    /* Navbar */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      padding: 12px 24px;
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      border-bottom: 1px solid #00ffff33;
+    }
+    nav a {
+      color: #00ffff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+    nav a:hover {
+      color: #ffffff;
+      text-shadow: 0 0 6px #00ffff;
+    }
+
+    /* Footer */
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      color: #00ffff;
+      text-align: center;
+      padding: 8px;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🔝 Navigation Bar -->
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#mission">Our Mission</a>
+    <a href="#contact">Contact Us</a>
+  </nav>
+<!-- 🌍 3D Earth Visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script>
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+const geometry = new THREE.SphereGeometry(2, 64, 64);
+    const texture = new THREE.TextureLoader().load('https://threejs.org/examples/textures/land_ocean_ice_cloud_2048.jpg');
+    const material = new THREE.MeshStandardMaterial({ map: texture });
+    const earth = new THREE.Mesh(geometry, material);
+    scene.add(earth);
+const light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(5, 3, 5);
+    scene.add(light);
+camera.position.z = 5;
+function animate() {
+      requestAnimationFrame(animate);
+      earth.rotation.y += 0.001;
+      renderer.render(scene, camera);
+    }
+animate();
+  </script>
+<!-- 🤖 TensorFlow.js AI Model -->
+ <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/FontLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/geometries/TextGeometry.js"></script>
+<script>
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ alpha: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  const geometry = new THREE.SphereGeometry(2, 64, 64);
+  const texture = new THREE.TextureLoader().load('https://threejs.org/examples/textures/land_ocean_ice_cloud_2048.jpg');
+  const material = new THREE.MeshStandardMaterial({ map: texture });
+  const earth = new THREE.Mesh(geometry, material);
+  scene.add(earth);
+
+  const light = new THREE.DirectionalLight(0xffffff, 1);
+  light.position.set(5, 3, 5);
+  scene.add(light);
+
+  const ambient = new THREE.AmbientLight(0x404040, 2);
+  scene.add(ambient);
+
+  camera.position.z = 5;
+
+  let textMesh, glowMesh;
+  let textZ = 0;
+  let pulsing = false;
+  let textOpacity = 0;
+
+  const loader = new THREE.FontLoader();
+  loader.load('https://threejs.org/examples/fonts/helvetiker_bold.typeface.json', function (font) {
+    const textGeometry = new THREE.TextGeometry('Maksons SpaceBridges', {
+      font: font,
+      size: 0.25,
+      height: 0.05,
+    });
+
+    textGeometry.center();
+
+    const textMaterial = new THREE.MeshStandardMaterial({
+      color: 0x00ffff,
+      transparent: true,
+      opacity: textOpacity
+    });
+
+    textMesh = new THREE.Mesh(textGeometry, textMaterial);
+    textMesh.position.set(0, 0, 0);
+    scene.add(textMesh);
+
+    // Glow layer
+    const glowMaterial = new THREE.MeshBasicMaterial({
+      color: 0x00ffff,
+      transparent: true,
+      opacity: 0.1,
+    });
+    glowMesh = new THREE.Mesh(textGeometry.clone(), glowMaterial);
+    glowMesh.scale.multiplyScalar(1.05);
+    glowMesh.position.set(0, 0, 0);
+    scene.add(glowMesh);
+  });
+
+  function animate() {
+    requestAnimationFrame(animate);
+    earth.rotation.y += 0.001;
+
+    if (textMesh) {
+      if (!pulsing) {
+        textZ += 0.02;
+        textMesh.position.z = textZ;
+        glowMesh.position.z = textZ;
+
+        textOpacity = Math.min(1, textOpacity + 0.02);
+        textMesh.material.opacity = textOpacity;
+        glowMesh.material.opacity = textOpacity * 0.3;
+
+        if (textZ >= 3.5) pulsing = true;
+      } else {
+        const floatY = Math.sin(Date.now() * 0.002) * 0.1;
+        textMesh.position.y = floatY;
+        glowMesh.position.y = floatY;
+      }
+    }
+
+    renderer.render(scene, camera);
+  }
+
+  animate();
+</script>
+
+<!-- 🔽 Footer Section -->
+  <footer>
+    © 2025 Maksons Spacebridges. ALL RIGHTS RESERVED | Developed by Umar Ayub  | Loading.. 🌌 Quantum | ⚛️ Logic | 🧠 Systems | 🚀 Launch
+  </footer>
+</body>
+</html>
